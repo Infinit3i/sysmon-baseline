@@ -1,0 +1,121 @@
+<Sysmon schemaversion="4.83">
+  <HashAlgorithms>*</HashAlgorithms>
+  <CheckRevocation />
+  <DnsLookup>False</DnsLookup>
+  <ArchiveDirectory>Research</ArchiveDirectory>
+  <EventFiltering>
+    
+    <!-- Process Creation -->
+    <ProcessCreate onmatch="include">
+      <CommandLine name="technique_id=T1087.002,apt=Volt Typhoon" condition="contains">net group /dom</CommandLine>
+      <CommandLine name="technique_id=T1087.001,apt=Volt Typhoon" condition="contains">quser</CommandLine>
+      <CommandLine name="technique_id=T1560.001,apt=Volt Typhoon,Fancy Bear" condition="contains">7z</CommandLine>
+      <Image name="technique_id=T1059.004,apt=Volt Typhoon,Fancy Bear" condition="contains">\BrightmetricAgent.exe</Image>
+      <Image name="technique_id=T1046,apt=Volt Typhoon" condition="contains">\ScanLine.exe</Image>
+      <Image name="technique_id=T1036.005,apt=Volt Typhoon,Fancy Bear" condition="contains">vm3dservice.exe</Image>
+      <Image name="technique_id=T1090,apt=Volt Typhoon" condition="contains">FRP</Image>
+      <Image name="technique_id=S0357,apt=Volt Typhoon,Fancy Bear" condition="contains">\Impacket.exe</Image>
+      <Image name="technique_id=S0002,apt=Volt Typhoon" condition="contains">\Mimikatz.exe</Image>
+      <Image name="technique_id=S0029,apt=Volt Typhoon,Fancy Bear,Fox Kitten" condition="contains">\PsExec.exe</Image>
+      <ParentImage name="technique_id=T1059.003,apt=Volt Typhoon,Fox Kitten" condition="contains">\cmd.exe</ParentImage>
+
+      <CommandLine name="technique_id=T1071.004,apt=Fancy Bear" condition="contains">dnscat</CommandLine>
+      <CommandLine name="technique_id=T1059.001,apt=Fancy Bear,Fox Kitten" condition="contains">powershell</CommandLine>
+      <CommandLine name="technique_id=T1036.005,apt=Fancy Bear" condition="contains">java</CommandLine>
+      <Image name="technique_id=S0521,apt=Fancy Bear" condition="contains">BloodHound.exe</Image>
+      <Image name="technique_id=S0508,apt=Fancy Bear,Fox Kitten" condition="contains">ngrok.exe</Image>
+    </ProcessCreate>
+    
+    <!-- Network Connections -->
+    <NetworkConnect onmatch="include">
+      <Image name="technique_id=T1090.001,apt=Volt Typhoon" condition="contains">netsh</Image>
+      <Image name="technique_id=S0508,apt=Fancy Bear,Fox Kitten" condition="contains">ngrok.exe</Image>
+      <DestinationPort name="technique_id=S0488,apt=Fancy Bear" condition="is">445</DestinationPort>
+      <DestinationPort name="technique_id=S0357,apt=Fancy Bear" condition="is">139</DestinationPort>
+      <DestinationIp name="technique_id=S0508,apt=Fancy Bear,Fox Kitten" condition="contains">tunnel.ngrok.io</DestinationIp>
+      <DestinationPort name="technique_id=T1021.001,apt=Fox Kitten" condition="is">3389</DestinationPort>
+      <DestinationPort name="technique_id=T1021.002,apt=Fox Kitten" condition="is">445</DestinationPort>
+      <DestinationIp name="technique_id=T1102,apt=Fox Kitten" condition="contains">amazonaws.com</DestinationIp>
+    </NetworkConnect>
+
+    <!-- File Creation -->
+    <FileCreate onmatch="include">
+      <TargetFilename name="technique_id=T1003.003,apt=Volt Typhoon,Fox Kitten" condition="contains">C:\Windows\Temp\ntds.dit</TargetFilename>
+      <TargetFilename name="technique_id=T1070.004,apt=Volt Typhoon,Fancy Bear" condition="contains">systeminfo.dat</TargetFilename>
+      <TargetFilename name="technique_id=T1005,apt=Volt Typhoon" condition="contains">*.log</TargetFilename>
+      <TargetFilename name="technique_id=S0002,apt=Volt Typhoon" condition="contains">Mimikatz.exe</TargetFilename>
+      <TargetFilename name="technique_id=T1560.001,apt=Fox Kitten,Fancy Bear" condition="contains">*.7z</TargetFilename>
+      <TargetFilename name="technique_id=T1555.005,apt=Fox Kitten" condition="contains">KeePass.db</TargetFilename>
+      <TargetFilename name="technique_id=T1505.003,apt=Fox Kitten" condition="contains">webshell.aspx</TargetFilename>
+      <TargetFilename name="technique_id=S0598,apt=Fancy Bear" condition="contains">webshell.aspx</TargetFilename>
+      <TargetFilename name="technique_id=S1040,apt=Fancy Bear" condition="contains">rclone.conf</TargetFilename>
+    </FileCreate>
+
+    <!-- Registry Events -->
+    <RegistryEvent onmatch="include">
+      <TargetObject name="technique_id=T1012,apt=Fox Kitten" condition="contains">\ntuser.dat</TargetObject>
+      <TargetObject name="technique_id=T1012,apt=Fox Kitten" condition="contains">\UserClass.dat</TargetObject>
+      <TargetObject name="technique_id=T1112,apt=Volt Typhoon,Fancy Bear" condition="contains">\PortProxy</TargetObject>
+      <Details name="technique_id=S0075,apt=Volt Typhoon" condition="contains">Reg.exe</Details>
+    </RegistryEvent>
+
+    <!-- Process Access -->
+    <ProcessAccess onmatch="include">
+      <SourceImage name="technique_id=T1055,apt=Volt Typhoon" condition="contains">\BrightmetricAgent.exe</SourceImage>
+      <TargetImage name="technique_id=T1003.001,apt=Volt Typhoon,Fancy Bear,Fox Kitten" condition="contains">\lsass.exe</TargetImage>
+      <SourceImage name="technique_id=S0029,apt=Fancy Bear,Fox Kitten" condition="contains">PsExec.exe</SourceImage>
+    </ProcessAccess>
+
+    <!-- Image Load -->
+    <ImageLoad onmatch="include">
+      <Image name="technique_id=T1547,apt=Volt Typhoon" condition="contains">ScanLine</Image>
+      <Image name="technique_id=S1154,apt=Volt Typhoon" condition="contains">VersaMem</Image>
+      <Image name="technique_id=S0357,apt=Volt Typhoon,Fancy Bear" condition="contains">Impacket.exe</Image>
+      <Image name="technique_id=S0029,apt=Volt Typhoon,Fancy Bear,Fox Kitten" condition="contains">PsExec.exe</Image>
+      <Image name="technique_id=S0508,apt=Fancy Bear,Fox Kitten" condition="contains">ngrok.exe</Image>
+    </ImageLoad>
+
+    <!-- File Delete -->
+    <FileDelete onmatch="include">
+      <TargetFilename name="technique_id=T1070.004,apt=Volt Typhoon,Fancy Bear" condition="contains">*.log</TargetFilename>
+      <TargetFilename name="technique_id=S1040,apt=Fancy Bear" condition="contains">rclone.conf</TargetFilename>
+    </FileDelete>
+
+    <!-- DNS Query -->
+    <DnsQuery onmatch="include">
+      <QueryName name="technique_id=T1071.004,apt=Fancy Bear" condition="contains">example.com</QueryName>
+      <QueryName name="technique_id=T1102,apt=Fox Kitten" condition="contains">amazonaws.com</QueryName>
+    </DnsQuery>
+
+    <!-- Clipboard Change -->
+    <ClipboardChange onmatch="include">
+      <Process name="technique_id=S1018,apt=Fancy Bear" condition="contains">SaintBot</Process>
+    </ClipboardChange>
+
+    <!-- WMI Event -->
+    <WmiEvent onmatch="include">
+      <Query name="technique_id=T1654,apt=Volt Typhoon" condition="contains">Get-EventLog</Query>
+      <Query name="technique_id=S0645,apt=Volt Typhoon,Fancy Bear" condition="contains">Wevtutil</Query>
+      <Query name="technique_id=T1047,apt=Fancy Bear" condition="contains">Win32_Process</Query>
+    </WmiEvent>
+
+    <!-- Pipe Events -->
+    <PipeEvent onmatch="include">
+      <PipeName name="technique_id=T1021.001,apt=Volt Typhoon,Fancy Bear,Fox Kitten" condition="contains">\\\\.\\pipe\\</PipeName>
+      <PipeName name="technique_id=S0029,apt=Volt Typhoon,Fancy Bear,Fox Kitten" condition="contains">PsExec</PipeName>
+    </PipeEvent>
+
+    <!-- System Time Discovery -->
+    <ProcessCreate onmatch="include">
+      <CommandLine name="technique_id=T1124,apt=Volt Typhoon" condition="contains">Get-TimeZone</CommandLine>
+      <CommandLine name="technique_id=S0645,apt=Volt Typhoon,Fancy Bear" condition="contains">Wevtutil</CommandLine>
+    </ProcessCreate>
+
+    <!-- Clipboard Change -->
+    <ClipboardChange onmatch="include">
+      <Process name="T1113" condition="contains">gdi32.dll</Process> <!-- Screen Capture --> <!-- Volt Typhoon -->
+      <Process name="S0057" condition="contains">Tasklist</Process> <!-- Tasklist --> <!-- Volt Typhoon -->
+    </ClipboardChange>
+    
+  </EventFiltering>
+</Sysmon>
