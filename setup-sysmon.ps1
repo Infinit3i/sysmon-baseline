@@ -29,7 +29,15 @@ $processcreation = Get-SysmonProcessCreateEvent | select user,parentcommandline,
 $processcreation | Export-Csv .\processdata.csv
 $processcreation | ConvertTo-SysmonRule
 
-Get-SysmonFileTime | select image -Unique
+<EventFiltering>
+    <RuleGroup name="" groupRelation="or">
+        <FileCreateTime onmatch="exclude">
+        Get-SysmonFileTime | select image -Unique | ConvertTo-SysmonRule
+        </FileCreateTime>
+    </RuleGroup>
+</EventFiltering>
+
+Video 8
 
 
-# Video 7
+https://www.youtube.com/watch?v=cN714yh7UF4&list=PLk-dPXV5k8SG26OTeiiF3EIEoK4ignai7&index=7&ab_channel=TrustedSec

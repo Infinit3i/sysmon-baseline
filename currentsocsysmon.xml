@@ -817,6 +817,23 @@
                 <!-- ADDITIONAL REFERENCE: [ http://www.silentrunners.org/launchpoints.html ]  -->
                 <!-- ADDITIONAL REFERENCE: [ https://www.microsoftpressstore.com/articles/article.aspx?p=2762082&seqNum=2 ]  -->
                 <!-- ADDITIONAL REFERENCE: [ https://web.archive.org/web/20200116001643/http://scholarworks.rit.edu/cgi/viewcontent.cgi?article=1533&context=theses | Understanding malware autostart techniques - Matthew Gottlieb ]  -->
+                <TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging</TargetObject>
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging</TargetObject>
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription</TargetObject>
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="contains all">software\microsoft\powershell\;\shellids\microsoft.powershell\executionpolicy</TargetObject><!--MDE-->
+                <TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Microsoft\Security Center\AntiVirusDisableNotify</TargetObject>
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableAntiSpyware</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableAntiVirus</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection\DisableBehaviorMonitoring</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection\DisableOnAccessProtection</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection\DisableScanOnRealtimeEnable</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection\DisableIOAVProtection</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection\DisableRealtimeMonitoring</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet\SpyNetReporting</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\SOFTWARE\Policies\Microsoft\Windows Defender</TargetObject>				<!--Microsoft:Defender: Detect changes to Defender administrative settings to monitor for disablement--><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="contains all">HKLM\software\microsoft\microsoft antimalware\exclusions\</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\software\microsoft\Windows Advanced Threat Protection\TelLib</TargetObject><!--MDE-->
+				<TargetObject name="technique_id=T1562.001,technique_name=Disable or Modify Tools" condition="begin with">HKLM\software\policies\microsoft\windows advanced threat protection\</TargetObject><!--MDE-->
                 <TargetObject name="technique_id=T1012,apt=Fox Kitten" condition="contains">\ntuser.dat</TargetObject> <!-- added 2025-01-08 by cpl iverson -->
                 <TargetObject name="technique_id=T1012,apt=Fox Kitten" condition="contains">\UserClass.dat</TargetObject> <!-- added 2025-01-08 by cpl iverson -->
                 <TargetObject name="technique_id=T1112,apt=Volt Typhoon,Fancy Bear" condition="contains">\PortProxy</TargetObject> <!-- added 2025-01-08 by cpl iverson -->
@@ -1061,6 +1078,10 @@
             <RegistryEvent onmatch="exclude">
                 <!-- COMMENT:	Remove low-information noise. Often these hide a procress recreating an empty key and do not hide the values created subsequently. -->
                 <!-- NOTE:	A lot of noise can be removed by excluding CreateKey events, which are largely innocuous -->
+                <Rule groupRelation="and">
+					<Image condition="is">C:\Program Files\VMware\VMware Tools\vmtoolsd.exe</Image>
+					<TargetObject condition="is">HKLM\System\CurrentControlSet\Services\Tcpip\Parameters</TargetObject>
+				</Rule>
                 <TargetObject condition="contains">\{CAFEEFAC-</TargetObject>
                 <EventType condition="is">CreateKey</EventType>
                 <TargetObject condition="begin with">HKLM\COMPONENTS</TargetObject>
@@ -1187,38 +1208,30 @@
         <!-- NOTE: Other filesystem minifilters can make it appear to Sysmon that some files are being written twice. This is not a Sysmon issue, per Mark Russinovich. -->
         <!-- DATA: UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, Hash -->
         <FileCreateStreamHash onmatch="include">
-            <TargetFilename condition="contains">Downloads</TargetFilename>
-            <!-- Downloaded files. Does not include "Run" files in IE -->
-            <TargetFilename condition="contains">Temp\7z</TargetFilename>
-            <!-- 7zip extractions -->
-            <TargetFilename condition="contains">Startup</TargetFilename>
-            <!-- ADS startup | Example: [ https://www.hybrid-analysis.com/sample/a314f6106633fba4b70f9d6ddbee452e8f8f44a72117749c21243dc93c7ed3ac?environmentId=100 ]  -->
-            <TargetFilename condition="end with">.bat</TargetFilename>
-            <!-- Batch scripting -->
-            <TargetFilename condition="end with">.cmd</TargetFilename>
-            <!-- Batch scripting | Credit @ion-storm  -->
-            <TargetFilename condition="end with">.doc</TargetFilename>
-            <!-- Office doc potentially with macro  -->
-            <TargetFilename condition="end with">.hta</TargetFilename>
-            <!-- Scripting -->
-            <TargetFilename condition="end with">.lnk</TargetFilename>
-            <!-- Shortcut file | Credit @ion-storm  -->
-            <TargetFilename condition="end with">.ppt</TargetFilename>
-            <!-- Office doc potentially with macros -->
-            <TargetFilename condition="end with">.ps1</TargetFilename>
-            <!-- PowerShell -->
-            <TargetFilename condition="end with">.ps2</TargetFilename>
-            <!-- PowerShell -->
-            <TargetFilename condition="end with">.reg</TargetFilename>
-            <!-- Registry File -->
-            <TargetFilename condition="end with">.jse</TargetFilename>
-            <!-- Registry File -->
-            <TargetFilename condition="end with">.vb</TargetFilename>
-            <!-- VisualBasicScripting files -->
-            <TargetFilename condition="end with">.vbe</TargetFilename>
-            <!-- VisualBasicScripting files -->
-            <TargetFilename condition="end with">.vbs</TargetFilename>
-            <!-- VisualBasicScripting files -->
+            <TargetFilename condition="contains">Downloads</TargetFilename><!-- Downloaded files. Does not include "Run" files in IE -->
+            <TargetFilename condition="contains">Temp\7z</TargetFilename><!-- 7zip extractions -->
+            <TargetFilename condition="contains">AppData</TargetFilename>
+            <TargetFilename condition="contains">ProgramData</TargetFilename>
+            <TargetFilename condition="contains">Users</TargetFilename>
+            <TargetFilename condition="contains">Startup</TargetFilename><!-- ADS startup | Example: [ https://www.hybrid-analysis.com/sample/a314f6106633fba4b70f9d6ddbee452e8f8f44a72117749c21243dc93c7ed3ac?environmentId=100 ]  -->
+            <TargetFilename condition="end with">.bat</TargetFilename><!-- Batch scripting -->
+            <TargetFilename condition="end with">.cmd</TargetFilename><!-- Batch scripting | Credit @ion-storm  -->
+            <TargetFilename condition="end with">.doc</TargetFilename><!-- Office doc potentially with macro  -->
+            <TargetFilename condition="end with">.hta</TargetFilename><!-- Scripting -->
+            <TargetFilename condition="end with">.lnk</TargetFilename><!-- Shortcut file | Credit @ion-storm  -->
+            <TargetFilename condition="end with">.ppt</TargetFilename> <!-- Office doc potentially with macros -->
+            <TargetFilename name="technique_id=T1059.001,technique_name=PowerShell" condition="end with">.ps1</TargetFilename>				<!--Powershell-->
+			<TargetFilename name="technique_id=T1059.001,technique_name=PowerShell" condition="end with">.ps2</TargetFilename>				<!--Powershell-->
+            <TargetFilename condition="end with">.reg</TargetFilename><!-- Registry File -->
+            <TargetFilename condition="end with">.jse</TargetFilename><!-- Registry File -->
+            <TargetFilename condition="end with">.vb</TargetFilename><!-- VisualBasicScripting files -->
+            <TargetFilename condition="end with">.vbe</TargetFilename><!-- VisualBasicScripting files -->
+            <TargetFilename condition="end with">.vbs</TargetFilename><!-- VisualBasicScripting files -->
+            <TargetFilename condition="end with">.reg</TargetFilename>        <!--Registry File-->
+            <Rule name="technique_id=T1189,technique_name=Drive-by Compromise" groupRelation="and">					<!--https://twitter.com/SecurityJosh-->
+				<TargetFilename condition="end with">:Zone.Identifier</TargetFilename>
+				<Contents condition="contains any">blob:;about:internet</Contents>
+			</Rule>
         </FileCreateStreamHash>
         <RuleGroup name="" groupRelation="or">
             <FileCreateStreamHash onmatch="exclude"></FileCreateStreamHash>
@@ -1235,9 +1248,35 @@
         <!-- ADDITIONAL REFERENCE: [ https://blog.cobaltstrike.com/2015/10/07/named-pipe-pivoting/ ]  -->
         <!-- DATA: UtcTime, ProcessGuid, ProcessId, PipeName, Image -->
         <RuleGroup name="" groupRelation="or">
+            <PipeEvent onmatch="exclude">
+                <Image condition="end with">Program Files\SplunkUniversalForwarder\bin\splunkd.exe</Image>
+                <Image condition="end with">Program Files\SplunkUniversalForwarder\bin\splunk.exe</Image>
+                <Image condition="end with">Program Files\SplunkUniversalForwarder\bin\splunk-MonitorNoHandle.exe</Image>
+                 <Rule groupRelation="and">
+                    <Image condition="contains all">C:\Program Files;\Google\Update\Install\;setup.exe</Image>
+                    <PipeName condition="begin with">\crashpad_</PipeName>
+                </Rule>
+                <Rule groupRelation="and">
+                    <Image condition="contains all">C:\Program Files;\Google\Chrome\Application\chrome.exe</Image>
+                    <PipeName condition="begin with">\mojo.</PipeName>
+                </Rule>
+                <Rule groupRelation="and">
+                    <Image condition="contains all">C:\Program Files;\Google\Chrome\Application\;\Installer\chrmstp.exe</Image>
+                    <PipeName condition="begin with">\crashpad_</PipeName>
+                </Rule>
+            </PipeEvent>
             <PipeEvent onmatch="include">
                 <PipeName name="technique_id=T1021.001,apt=Volt Typhoon,Fancy Bear,Fox Kitten" condition="contains">\\\\.\\pipe\\</PipeName> <!-- added 2025-01-08 by cpl iverson -->
                 <PipeName name="technique_id=S0029,apt=Volt Typhoon,Fancy Bear,Fox Kitten" condition="contains">PsExec</PipeName> <!-- added 2025-01-08 by cpl iverson -->
+                <PipeName name="technique_id=T1021.002,technique_name=SMB/Windows Admin Shares" condition="begin with">\PSEXESVC</PipeName>
+                <Rule groupRelation="and">
+                    <PipeName name="technique_id=T1021.002,technique_name=SMB/Windows Admin Shares" condition="begin with">\msse-</PipeName>        <!-- default cobalt strike pipe name-->
+                    <PipeName name="technique_id=T1021.002,technique_name=SMB/Windows Admin Shares" condition="end with">-server</PipeName>        <!-- default cobalt strike pipe name-->
+                </Rule>
+                <PipeName name="technique_id=T1021.002,technique_name=SMB/Windows Admin Shares" condition="begin with">\msagent_</PipeName>        <!-- default cobalt strike pipe name-->
+                <PipeName name="technique_id=T1055; Possible Cobalt Strike post-exploitation jobs." condition="begin with">\postex_</PipeName>        <!-- default cobalt strike pipe name-->
+                <PipeName name="technique_id=T1021.004,technique_name=Remote Services: SSH" condition="begin with">\postex_ssh_</PipeName>        <!-- default cobalt strike pipe name-->
+                <PipeName name="technique_id=T1021.002,technique_name=SMB/Windows Admin Shares" condition="begin with">\status_</PipeName>        <!-- default cobalt strike pipe name-->
             </PipeEvent>
         </RuleGroup>
         <!-- SYSMON EVENT ID 19 & 20 & 21 : WMI EVENT MONITORING [WmiEvent] -->
